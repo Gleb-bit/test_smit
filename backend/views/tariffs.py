@@ -23,10 +23,11 @@ async def get_tariff_rate(
     session: AsyncSession = Depends(get_session),
 ):
     tariff_filter = and_(Tariff.date == date, Cargo.type == cargo_type)
-    tariff = await Orm.scalar(Tariff, session, tariff_filter, Tariff.cargos)
+    tariff = await Orm.scalar(Tariff, session, tariff_filter, Tariff.cargos, True)
+    print(tariff)
 
     if not tariff:
-        raise HTTPException(400, "Для данной даты грузов не найдено")
+        raise HTTPException(400, "Для данной даты/названия грузов не найдено")
 
     return {"rate": tariff.rate}
 

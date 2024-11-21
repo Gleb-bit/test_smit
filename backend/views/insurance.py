@@ -24,9 +24,10 @@ async def get_insurance(
         raise HTTPException(400, "Указанного груза нет в базе данных")
 
     response, status_code = await send_request(
-        f"{MAIN_URL}/rates/get_tariff_rate/",
+        f"{MAIN_URL}/tariffs/get_tariff_rate/",
         params={"date": date, "cargo_type": cargo_type},
     )
+    print(response)
     if status_code != 200:
         return response
 

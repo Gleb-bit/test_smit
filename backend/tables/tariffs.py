@@ -32,6 +32,5 @@ class Tariff(Base):
     cargos = relationship(
         "Cargo",
         secondary=cargo_tariff_association,
-        back_populates="tariffs",
-        lazy="joined",
+        back_populates="tariffs"
     )

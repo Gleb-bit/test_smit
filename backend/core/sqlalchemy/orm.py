@@ -41,7 +41,7 @@ class Orm:
                 return relationship
 
     @staticmethod
-    def get_query_with_relations(query, relations="*"):
+    def get_query_with_relations(query, relations="*", join=False):
         return query.options(selectinload(relations))
 
     @staticmethod
@@ -109,6 +109,7 @@ class Orm:
         session: AsyncSession,
         exclude_data: dict = None,
         relations=None,
+        join=False,
     ) -> Result:
         """
         Method to filter records in the table based on a dictionary of fields.
@@ -127,6 +128,9 @@ class Orm:
 
         if relations:
             query = cls.get_query_with_relations(query, relations)
+
+        if join:
+            query = query.join(relations)
 
         if exclude_data:
             exclude_query = select(table).filter_by(**exclude_data)
@@ -165,6 +169,8 @@ class Orm:
         session: AsyncSession,
         filters: Union[dict, bool] = dict,
         relations=None,
+        join=False,
+        exclude_data=None,
     ):
         """
         Method to execute a query and retrieve a single record from the table based on filter conditions.
@@ -180,9 +186,11 @@ class Orm:
         """
 
         if isinstance(filters, dict):
-            query = await cls.filter_by(table, filters, session, relations)
+            query = await cls.filter_by(
+                table, filters, session, exclude_data, relations, join
+            )
         else:
-            query = await cls.where(table, filters, session, relations)
+            query = await cls.where(table, filters, session, relations, join)
 
         return query.scalar()
 
@@ -206,7 +214,13 @@ class Orm:
 
     @classmethod
     async def where(
-        cls, table, filter_expr, session: AsyncSession, relations=None, execute=True
+        cls,
+        table,
+        filter_expr,
+        session: AsyncSession,
+        relations=None,
+        join=False,
+        execute=True,
     ) -> Result:
         """
         Method to filter records in the table based on a filter expression.
@@ -223,6 +237,9 @@ class Orm:
         query = select(table)
         if relations:
             query = cls.get_query_with_relations(query, relations)
+
+        if join:
+            query = query.join(relations)
 
         if execute:
             return await session.execute(query.where(filter_expr))
