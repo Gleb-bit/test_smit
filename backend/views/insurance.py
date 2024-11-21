@@ -23,15 +23,15 @@ async def get_insurance(
     if not cargo:
         raise HTTPException(400, "Указанного груза нет в базе данных")
 
-    rate_data, status_code = await send_request(
+    response, status_code = await send_request(
         f"{MAIN_URL}/rates/get_tariff_rate/",
         params={"date": date, "cargo_type": cargo_type},
     )
     if status_code != 200:
-        return rate_data
+        return response
 
     return {
         "Стоимость страхования": round(
-            cargo.declared_value * float(rate_data["rate"]), 2
+            cargo.declared_value * float(response["rate"]), 2
         )
     }

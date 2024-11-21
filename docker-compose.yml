@@ -26,19 +26,19 @@ services:
     env_file:
       - .env
 
-  pgbackups:
-    image: prodrigestivill/postgres-backup-local
-    container_name: smit_backups
-    restart: always
-    user: postgres:postgres
-    volumes:
-      - /var/opt/pgbackups:/backups
-    links:
-      - db
-    depends_on:
-      - db
-    env_file:
-      - .env
+#  pgbackups:
+#    image: prodrigestivill/postgres-backup-local
+#    container_name: smit_backups
+#    restart: always
+#    user: postgres:postgres
+#    volumes:
+#      - /var/opt/pgbackups:/backups
+#    links:
+#      - db
+#    depends_on:
+#      - db
+#    env_file:
+#      - .env
 
 volumes:
   pgdata:
